@@ -212,7 +212,8 @@ public class AIClient implements Runnable
      */
     public int getMove(GameState currentBoard)
     {
-        int myMove = getRandom();
+        //int myMove = getRandom();
+        int myMove = SearchMethod.searchMove(currentBoard);
         return myMove;
     }
     

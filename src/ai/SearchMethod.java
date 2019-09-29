@@ -2,39 +2,41 @@ package ai;
 
 import kalaha.GameState;
 
-public class MiniMaxSearch {
-    /*
-    *estimated by Player 1's scores
+public class SearchMethod {
+    /**
+     * Using Player 1's scores to estimate scores of a GameState.
      */
     public static int playerEstimation=1;
-    public static int depth=0;
-    public static int threshould=6;
-    public static int searchScores(GameState currentBoard, int depth){
-        System.out.println("Search "+currentBoard.toString());
+    /**
+     * maxDepth is set to ensure that the search returns in time.
+     */
+    public static int maxDepth=6;
+    /**
+     * Using Minimax search algorithm to find scores of the given currentBoard
+     */
+    static int searchScores(GameState currentBoard, int depth){
+        //System.out.println("Search "+currentBoard.toString());
         if (currentBoard.gameEnded()){
             return currentBoard.getScore(playerEstimation);
         }
-        if (depth>threshould){
+        if (depth>maxDepth){
             return evaluation(currentBoard);
         }
         int currentNextPlayer=currentBoard.getNextPlayer();
-        int score=0;
-        int bestMove=-1;
-        for (int i=1;i<7;i++){//TODO improve to random
+        int score=-1;
+        //int bestMove=-1;
+        for (int i=1;i<7;i++){//TODO improve to random sequence
             GameState newState=currentBoard.clone();
             if(newState.makeMove(i)){
                 if (newState.gameEnded()){
-                    int endscore=newState.getScore(playerEstimation);
+                    int endScores=newState.getScore(playerEstimation);
                     //int player=newState.getNextPlayer();
-                    if (currentNextPlayer!=playerEstimation && endscore<score){
-                        //find minimum
-                        score=endscore;
-                        bestMove=i;
-                    }else
-                    if (currentNextPlayer==playerEstimation && endscore>score){
-                        //find maximum
-                        score=endscore;
-                        bestMove=i;
+                    if ((currentNextPlayer!=playerEstimation && endScores<score) ||
+                            (currentNextPlayer==playerEstimation && endScores>score) || score<0){
+                        //(currentNextPlayer!=playerEstimation && endScores<score)--find minimum
+                        //(currentNextPlayer==playerEstimation && endScores>score)--find maximum
+                        score=endScores;
+                        //bestMove=i;
                     }
                     continue;
                 }
@@ -42,19 +44,19 @@ public class MiniMaxSearch {
                 if (currentNextPlayer!=newState.getNextPlayer()){
                     boolean pruneFlag=false;
                     int newStateScores=0;
-                    for (int j=1;j<7;j++){//TODO improve to random
+                    for (int j=1;j<7;j++){//TODO improve to random sequence
                         GameState newerState=newState.clone();
                         if (newerState.makeMove(j)){
                             int newerScores=searchScores(newerState,depth+2);
                             if (currentNextPlayer==playerEstimation){
-                                if (newerScores<=score){
+                                if (newerScores<=score && score>=0){
                                     pruneFlag=true;
                                     break;
                                 }else {
                                     newStateScores=newerScores;
                                 }
                             }else {
-                                if (newerScores>=score){
+                                if (newerScores>=score && score>=0){
                                     pruneFlag=true;
                                     break;
                                 }else {
@@ -75,12 +77,12 @@ public class MiniMaxSearch {
                 if (currentNextPlayer!=playerEstimation && newScore<score){
                     //find minimum
                     score=newScore;
-                    bestMove=i;
+                    //bestMove=i;
                 }else
                     if (currentNextPlayer==playerEstimation && newScore>score){
                         //find maximum
                         score=newScore;
-                        bestMove=i;
+                        //bestMove=i;
                     }
             }
         }
@@ -94,11 +96,37 @@ public class MiniMaxSearch {
         return estPlayerScores*total/(anotherPlayerScores+estPlayerScores);
     }
 
+    public static int searchMove(GameState currentState){
+        int bestScores=-1;
+        int bestMove=0;
+        for (int i=1 ; i<7 ; i++){
+            GameState nextState=currentState.clone();
+            if (nextState.makeMove(i)){
+                int nextScores=searchScores(nextState,1);
+                if (currentState.getNextPlayer()==playerEstimation){
+                    //expect max
+                    if (nextScores>bestScores || bestScores<0){
+                        bestScores=nextScores;
+                        bestMove=i;
+                    }
+                }else {
+                    //expect min
+                    if (nextScores<bestScores || bestScores<0){
+                        bestScores=nextScores;
+                        bestMove=i;
+                    }
+                }
+
+            }
+        }
+        return bestMove;
+    }
+
     public static void main(String[] args){
         GameState start=new GameState();
-        int result = searchScores(start,1);
+        //int result = searchScores(start,1);
         start.makeMove(1);
-        int result1 = searchScores(start,1);
-        System.out.println(result);
+        int result1 = searchMove(start);
+        //System.out.println(result);
     }
 }
