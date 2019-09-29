@@ -19,7 +19,7 @@ public class MiniMaxSearch {
         int currentNextPlayer=currentBoard.getNextPlayer();
         int score=0;
         int bestMove=-1;
-        for (int i=0;i<6;i++){//TODO improve to random
+        for (int i=1;i<7;i++){//TODO improve to random
             GameState newState=currentBoard.clone();
             if(newState.makeMove(i)){
                 if (newState.gameEnded()){
@@ -41,7 +41,7 @@ public class MiniMaxSearch {
                 if (currentNextPlayer!=newState.getNextPlayer()){
                     boolean pruneFlag=false;
                     int newStateScores=0;
-                    for (int j=0;j<6;j++){//TODO improve to random
+                    for (int j=1;j<7;j++){//TODO improve to random
                         GameState newerState=newState.clone();
                         if (newerState.makeMove(j)){
                             int newerScores=searchScores(newerState,depth+2);
