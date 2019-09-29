@@ -8,8 +8,9 @@ public class MiniMaxSearch {
      */
     public static int playerEstimation=1;
     public static int depth=0;
-    public static int threshould=10;
+    public static int threshould=6;
     public static int searchScores(GameState currentBoard, int depth){
+        System.out.println("Search "+currentBoard.toString());
         if (currentBoard.gameEnded()){
             return currentBoard.getScore(playerEstimation);
         }
@@ -90,12 +91,14 @@ public class MiniMaxSearch {
         int total=72;
         int estPlayerScores=currentState.getScore(playerEstimation);
         int anotherPlayerScores=currentState.getScore(3-playerEstimation);
-        return estPlayerScores/(anotherPlayerScores+estPlayerScores)*total;
+        return estPlayerScores*total/(anotherPlayerScores+estPlayerScores);
     }
 
     public static void main(String[] args){
         GameState start=new GameState();
         int result = searchScores(start,1);
+        start.makeMove(1);
+        int result1 = searchScores(start,1);
         System.out.println(result);
     }
 }
